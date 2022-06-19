@@ -1,0 +1,62 @@
+﻿@page "/"
+
+@using ListKeeperAPI.Models;
+@using ListKeeperUI.Data
+@using System.Drawing
+@inject ListKeeperAPIService ListKeeperAPIService;
+
+<h1>List Keeper</h1>
+
+@if (parentLists != null)
+{
+    <div class="lists-container">
+    @foreach (var parentList in parentLists)
+    {
+        <div class="parent-list-box" style="
+            background: @parentList.Color; 
+            color: @getTextColor(parentList.Color).ToString();
+            border: 1px solid @getTextColor(parentList.Color).ToString();
+        ">
+            <h4>@parentList.Name</h4>
+            <div>@parentList.DateCreated</div>
+        </div>
+    }
+    </div>
+}
+
+@code {
+    private List<LKParentList>? parentLists;
+
+    protected override async Task OnInitializedAsync()
+    {
+        parentLists = await ListKeeperAPIService.GetParentLists();
+    }
+
+    private string getTextColor(string inputColor)
+    {
+        Color color = ColorTranslator.FromHtml(inputColor);
+
+        var brightness = color.GetBrightness();
+
+        if (brightness > 5)
+        {
+            return "#000000";
+        } else
+        {
+            return "#FFFFFF";
+        }
+    }
+}
+
+<style>
+    .lists-container {
+        margin-top: 25px;
+    }
+
+    .parent-list-box {
+        padding: 15px;
+        border: 1px solid black;
+        border-radius: 15px;
+        cursor: pointer;
+    }
+</style>
